@@ -7,7 +7,7 @@ if (!('remove' in Element.prototype)) {
   };
 }
 
-function flyToStore(currentFeature) {
+function flyToClub(currentFeature) {
   map.flyTo({
       center: currentFeature.geometry.coordinates,
       zoom: 15
@@ -22,7 +22,7 @@ function createPopUp(currentFeature) {
   var popup = new mapboxgl.Popup({closeOnClick: false})
         .setLngLat(currentFeature.geometry.coordinates)
         .setHTML('<h3>Sweetgreen</h3>' +
-          '<h4>' + currentFeature.properties.address + '</h4>')
+          '<h4>' + currentFeature.properties + '</h4>')
         .addTo(map);
 }
 
@@ -31,6 +31,7 @@ function buildLocationList(data) {
   for (i = 0; i < data.features.length; i++) {
     var currentFeature = data.features[i];
     var prop = currentFeature.properties;
+    var clubName = currentFeature.name;
 
     var listings = document.getElementById('map-listings');
     var listing = listings.appendChild(document.createElement('div'));
@@ -41,24 +42,27 @@ function buildLocationList(data) {
     link.href = '#';
     link.className = 'title';
     link.dataPosition = i;
-    link.innerHTML = prop.address;
+    link.innerHTML = clubName;
 
     var details = listing.appendChild(document.createElement('div'));
-    details.innerHTML = prop.city;
+    details.innerHTML = prop.address + '<br />'
+    details.innerHTML += prop.city + ', ' + prop.state + ' ' + prop.postalCode
+    /*
     if (prop.phone) {
       details.innerHTML += ' &middot; ' + prop.phoneFormatted;
     }
+    */
 
 
 
     link.addEventListener('click', function(e){
-      // Update the currentFeature to the store associated with the clicked link
+      // Update the currentFeature to the club associated with the clicked link
       var clickedListing = data.features[this.dataPosition];
 
       // 1. Fly to the point
-      flyToStore(clickedListing);
+      flyToClub(clickedListing);
 
-      // 2. Close all other popups and display popup for clicked store
+      // 2. Close all other popups and display popup for clicked club
       createPopUp(clickedListing);
 
       // 3. Highlight listing in sidebar (and remove highlight for all other listings)
@@ -91,7 +95,7 @@ var map = new mapboxgl.Map({
 // Add zoom and rotation controls to the map.
 map.addControl(new mapboxgl.NavigationControl());
 
-var stores = {
+var clubs = {
   "type": "FeatureCollection",
   "features": [
     {
@@ -112,7 +116,8 @@ var stores = {
         "postalCode": "20005",
         "state": "D.C."
       },
-      "email": "email@email.com"
+      "email": "email@email.com",
+      "name": "Red River Valley Cowpokes"
     },
     {
       "type": "Feature",
@@ -132,7 +137,8 @@ var stores = {
         "postalCode": "20037",
         "state": "D.C."
       },
-      "email": "email2@email.com"
+      "email": "email2@email.com",
+      "name": "Texas Ten Horns"
     },
     {
       "type": "Feature",
@@ -152,28 +158,29 @@ var stores = {
         "postalCode": "20036",
         "state": "D.C."
       },
-      "email": "email3@email.com"
+      "email": "email3@email.com",
+      "name": "dummy club"
     }]
-  };
+};
 // This adds the data to the map
 map.on('load', function (e) {
   // This is where your '.addLayer()' used to be, instead add only the source without styling a layer
   map.addSource("places", {
     "type": "geojson",
-    "data": stores
+    "data": clubs
   });
   // Initialize the list
-  buildLocationList(stores);
+  buildLocationList(clubs);
 
 });
 
-// Store marker values for centering map
+// Club marker values for centering map
 var longs = []
 var lats = []
 
 // This is where your interactions with the symbol layer used to be
 // Now you have interactions with DOM markers instead
-stores.features.forEach(function(marker, i) {
+clubs.features.forEach(function(marker, i) {
   // Create an img element for the marker
   var el = document.createElement('div');
   el.id = "map-marker-" + i;
@@ -185,9 +192,9 @@ stores.features.forEach(function(marker, i) {
 
   el.addEventListener('click', function(e){
       // 1. Fly to the point
-      flyToStore(marker);
+      flyToClub(marker);
 
-      // 2. Close all other popups and display popup for clicked store
+      // 2. Close all other popups and display popup for clicked club
       createPopUp(marker);
 
       // 3. Highlight listing in sidebar (and remove highlight for all other listings)
