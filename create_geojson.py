@@ -1,9 +1,4 @@
-import os, csv
-creds = ''
-with open('creds.txt', 'r', encoding='utf-8') as cred_f:
-    creds = next(cred_f).strip()
-os.environ["GOOGLE_API_KEY"] = creds
-import geocoder
+import os, csv, json
 
 states = {pair[1]: pair[0] for pair in [
     ('AL', 'Alabama'),
@@ -61,6 +56,12 @@ states = {pair[1]: pair[0] for pair in [
 data = {}
 
 def create_csv():
+    creds = ''
+    with open('creds.txt', 'r', encoding='utf-8') as cred_f:
+        creds = next(cred_f).strip()
+    os.environ["GOOGLE_API_KEY"] = creds
+    import geocoder
+
     num_addresses = 0
     with open('clubs.csv', 'w', encoding='utf-8') as csv_f:
         writer = csv.writer(csv_f)
@@ -115,6 +116,43 @@ def create_csv():
                     line = next(club_f).strip()
 
     print("Num addresses written:", num_addresses)
-create_csv()
-#geo = geocoder.google(geocode_address)
-#latlong = geo.latlng
+
+
+def create_geojson():
+    data = {"type": "FeatureCollection", "features": []}
+
+    with open('clubs.csv', 'r', encoding='utf-8') as csv_f:
+        reader = csv.reader(csv_f)
+        header = next(reader)
+        # state,club_name,address1,city,state_short,zipcode,contact_name,contact_email,contact_phone,match_date,geocode_address,latitude,longitude
+        for row in reader:
+            if row != []:
+                row = {column: row[header.index(column)] for column in header}
+                obj = {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                            float(row['longitude']),
+                            float(row['latitude'])
+                        ]
+                    },
+                    "properties": {
+                        "phoneFormatted": row['contact_phone'],
+                        "address": row['address1'],
+                        "city": row['city'],
+                        "country": "United States",
+                        "postalCode": row['zipcode'],
+                        "state": row['state_short']
+                    },
+                    "clubName": row['club_name'],
+                    "email": row['contact_email'],
+                    "matchDate": row['match_date'],
+                    "state": row['state']
+                }
+                data['features'].append(obj)
+
+        json.dump(data, open('clubs.geojson', 'w', encoding='utf-8'), sort_keys=True, indent=4, separators=(',', ': '))
+
+#create_csv()
+create_geojson()

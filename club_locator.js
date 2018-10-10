@@ -10,7 +10,7 @@ if (!('remove' in Element.prototype)) {
 function flyToClub(currentFeature) {
   map.flyTo({
       center: currentFeature.geometry.coordinates,
-      zoom: 15
+      zoom: 6
     });
 }
 
@@ -21,8 +21,8 @@ function createPopUp(currentFeature) {
 
   var popup = new mapboxgl.Popup({closeOnClick: false})
         .setLngLat(currentFeature.geometry.coordinates)
-        .setHTML('<h3>Sweetgreen</h3>' +
-          '<h4>' + currentFeature.properties + '</h4>')
+        .setHTML('<h3>' + currentFeature.clubName + '</h3>' +
+          '<h4>' + currentFeature.properties.address + '</h4>')
         .addTo(map);
 }
 
@@ -31,7 +31,6 @@ function buildLocationList(data) {
   for (i = 0; i < data.features.length; i++) {
     var currentFeature = data.features[i];
     var prop = currentFeature.properties;
-    var clubName = currentFeature.name;
 
     var listings = document.getElementById('map-listings');
     var listing = listings.appendChild(document.createElement('div'));
@@ -42,7 +41,7 @@ function buildLocationList(data) {
     link.href = '#';
     link.className = 'title';
     link.dataPosition = i;
-    link.innerHTML = clubName;
+    link.innerHTML = currentFeature.clubName;
 
     var details = listing.appendChild(document.createElement('div'));
     details.innerHTML = prop.address + '<br />'
@@ -77,6 +76,7 @@ function buildLocationList(data) {
   }
 }
 
+
 mapboxgl.accessToken = 'pk.eyJ1IjoiYmFja2VuZGNhcyIsImEiOiJjamxwaXBrMnowMjRmM3Bxd3NxMXRhZHJ4In0.dROdTBHQTYJ0QWleHY8raw';
 
 // This adds the map
@@ -86,133 +86,72 @@ var map = new mapboxgl.Map({
   // style URL
   style: 'mapbox://styles/mapbox/light-v9',
   // initial position in [long, lat] format
-  center: [-77.034084142948, 38.909671288923],
+  //center: [-77.034084142948, 38.909671288923],
+  center: [-98.431766, 38.505300],
   // initial zoom
-  zoom: 13,
+  zoom: 1,
   scrollZoom: false
 });
 
 // Add zoom and rotation controls to the map.
 map.addControl(new mapboxgl.NavigationControl());
 
-var clubs = {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -77.034084142948,
-          38.909671288923
-        ]
-      },
-      "properties": {
-        "phoneFormatted": "(202) 234-7336",
-        "phone": "2022347336",
-        "address": "1471 P St NW",
-        "city": "Washington DC",
-        "country": "United States",
-        "postalCode": "20005",
-        "state": "D.C."
-      },
-      "email": "email@email.com",
-      "name": "Red River Valley Cowpokes"
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -77.049766,
-          38.900772
-        ]
-      },
-      "properties": {
-        "phoneFormatted": "(202) 507-8357",
-        "phone": "2025078357",
-        "address": "2221 I St NW",
-        "city": "Washington DC",
-        "country": "United States",
-        "postalCode": "20037",
-        "state": "D.C."
-      },
-      "email": "email2@email.com",
-      "name": "Texas Ten Horns"
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -77.043929,
-          38.910525
-        ]
-      },
-      "properties": {
-        "phoneFormatted": "(202) 387-9338",
-        "phone": "2023879338",
-        "address": "1512 Connecticut Ave NW",
-        "city": "Washington DC",
-        "country": "United States",
-        "postalCode": "20036",
-        "state": "D.C."
-      },
-      "email": "email3@email.com",
-      "name": "dummy club"
-    }]
-};
-// This adds the data to the map
-map.on('load', function (e) {
-  // This is where your '.addLayer()' used to be, instead add only the source without styling a layer
-  map.addSource("places", {
-    "type": "geojson",
-    "data": clubs
-  });
-  // Initialize the list
-  buildLocationList(clubs);
-
-});
-
-// Club marker values for centering map
-var longs = []
-var lats = []
-
-// This is where your interactions with the symbol layer used to be
-// Now you have interactions with DOM markers instead
-clubs.features.forEach(function(marker, i) {
-  // Create an img element for the marker
-  var el = document.createElement('div');
-  el.id = "map-marker-" + i;
-  el.className = 'c-map__marker';
-  // Add markers to the map at all points
-  new mapboxgl.Marker(el, {offset: [0, -23]})
-      .setLngLat(marker.geometry.coordinates)
-      .addTo(map);
-
-  el.addEventListener('click', function(e){
-      // 1. Fly to the point
-      flyToClub(marker);
-
-      // 2. Close all other popups and display popup for clicked club
-      createPopUp(marker);
-
-      // 3. Highlight listing in sidebar (and remove highlight for all other listings)
-      var activeItem = document.getElementsByClassName('active');
-
-      e.stopPropagation();
-      if (activeItem[0]) {
-         activeItem[0].classList.remove('active');
-      }
-
-      var listing = document.getElementById('map-listing-' + i);
-      listing.classList.add('active');
+jQuery.getJSON("https://gitcdn.link/cdn/tylerklement/fbd62b76025734dfbf22e761fc961bdc/raw/637ad42c205c7004d44f5069d45165272a7b6694/clubs.geojson")
+.done(function(clubs) {
+  // This adds the data to the map
+  map.on('load', function (e) {
+    // This is where your '.addLayer()' used to be, instead add only the source without styling a layer
+    map.addSource("places", {
+      "type": "geojson",
+      "data": clubs
+    });
+    // Initialize the list
+    buildLocationList(clubs);
   });
 
-  longs.push(marker.geometry.coordinates[0])
-  lats.push(marker.geometry.coordinates[1])
-});
+  // Club marker values for centering map
+  var longs = []
+  var lats = []
 
-var bounds = [[Math.min(...longs), Math.min(...lats)], [Math.max(...longs), Math.max(...lats)]]
-// center map over markers
-map.fitBounds(bounds, {padding: 120});
+  // This is where your interactions with the symbol layer used to be
+  // Now you have interactions with DOM markers instead
+  clubs.features.forEach(function(marker, i) {
+    // Create an img element for the marker
+    var el = document.createElement('div');
+    el.id = "map-marker-" + i;
+    el.className = 'c-map__marker';
+    // Add markers to the map at all points
+    new mapboxgl.Marker(el, {offset: [0, -23]})
+        .setLngLat(marker.geometry.coordinates)
+        .addTo(map);
+
+    el.addEventListener('click', function(e){
+        // 1. Fly to the point
+        flyToClub(marker);
+
+        // 2. Close all other popups and display popup for clicked club
+        createPopUp(marker);
+
+        // 3. Highlight listing in sidebar (and remove highlight for all other listings)
+        var activeItem = document.getElementsByClassName('active');
+
+        e.stopPropagation();
+        if (activeItem[0]) {
+           activeItem[0].classList.remove('active');
+        }
+
+        var listing = document.getElementById('map-listing-' + i);
+        listing.classList.add('active');
+    });
+
+    longs.push(marker.geometry.coordinates[0])
+    lats.push(marker.geometry.coordinates[1])
+  });
+
+  var bounds = [[Math.min(...longs), Math.min(...lats)], [Math.max(...longs), Math.max(...lats)]]
+  // center map over markers
+  map.fitBounds(bounds, {padding: 70});
+})
+.fail(function() {
+  alert("No clubs retrieved. Check either the CDN or the data's geojson format.")
+});
