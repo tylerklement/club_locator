@@ -72,6 +72,8 @@ function buildLocationList(data) {
       }
       this.parentNode.classList.add('active');
 
+      // 4. scroll to listing
+      document.getElementById(this.parentNode.id).scrollIntoView({ block: 'start',  behavior: 'instant' });
     });
   }
 }
@@ -142,6 +144,9 @@ jQuery.getJSON("https://gitcdn.link/cdn/tylerklement/fbd62b76025734dfbf22e761fc9
 
         var listing = document.getElementById('map-listing-' + i);
         listing.classList.add('active');
+
+        // 4. scroll to listing
+        document.getElementById(listing.id).scrollIntoView({ block: 'start',  behavior: 'instant' });
     });
 
     longs.push(marker.geometry.coordinates[0])
