@@ -18,11 +18,19 @@ function createPopUp(currentFeature) {
   var popUps = document.getElementsByClassName('mapboxgl-popup');
   if (popUps[0]) popUps[0].remove();
 
-
+  var prop = currentFeature.properties
+  var coordinates = currentFeature.geometry.coordinates
   var popup = new mapboxgl.Popup({closeOnClick: false})
-        .setLngLat(currentFeature.geometry.coordinates)
+        .setLngLat(coordinates)
         .setHTML('<h3>' + currentFeature.clubName + '</h3>' +
-          '<h4>' + currentFeature.properties.address + '</h4>')
+          '<h4>' + prop.address + '<br />' +
+          prop.city + ', ' + prop.state + ' ' + prop.postalCode + '<br />' +
+          '<a href="mailto:' + currentFeature.email + '">Contact</a><br />' +
+          '<a href="https://www.google.com/maps/dir//' +
+          coordinates[1] + ',' + coordinates[0] + '/@' + coordinates[1] + ',' +
+          coordinates[0] + ',7.37z/data=!4m2!4m1!3e3" target=_blank>Get directions</a>' +
+          '</h4>'
+        )
         .addTo(map);
 }
 
@@ -31,6 +39,7 @@ function buildLocationList(data) {
   for (i = 0; i < data.features.length; i++) {
     var currentFeature = data.features[i];
     var prop = currentFeature.properties;
+    var coordinates = currentFeature.geometry.coordinates
 
     var listings = document.getElementById('map-listings');
     var listing = listings.appendChild(document.createElement('div'));
@@ -45,7 +54,11 @@ function buildLocationList(data) {
 
     var details = listing.appendChild(document.createElement('div'));
     details.innerHTML = prop.address + '<br />'
-    details.innerHTML += prop.city + ', ' + prop.state + ' ' + prop.postalCode
+    details.innerHTML += prop.city + ', ' + prop.state + ' ' + prop.postalCode + '<br />'
+    details.innerHTML +=
+      '<a style="color:#0e5959;" href="https://www.google.com/maps/dir//' +
+      coordinates[1] + ',' + coordinates[0] + '/@' + coordinates[1] + ',' +
+      coordinates[0] + ',7.37z/data=!4m2!4m1!3e3" target=_blank>Get directions</a>'
     /*
     if (prop.phone) {
       details.innerHTML += ' &middot; ' + prop.phoneFormatted;
@@ -102,7 +115,7 @@ jQuery.getJSON("https://gitcdn.link/cdn/tylerklement/fbd62b76025734dfbf22e761fc9
 .done(function(clubs) {
   // This adds the data to the map
   map.on('load', function (e) {
-    // This is where your '.addLayer()' used to be, instead add only the source without styling a layer
+    // add the source without styling a layer
     map.addSource("places", {
       "type": "geojson",
       "data": clubs
@@ -115,8 +128,7 @@ jQuery.getJSON("https://gitcdn.link/cdn/tylerklement/fbd62b76025734dfbf22e761fc9
   var longs = []
   var lats = []
 
-  // This is where your interactions with the symbol layer used to be
-  // Now you have interactions with DOM markers instead
+  // interactions with DOM markers
   clubs.features.forEach(function(marker, i) {
     // Create an img element for the marker
     var el = document.createElement('div');
@@ -158,5 +170,5 @@ jQuery.getJSON("https://gitcdn.link/cdn/tylerklement/fbd62b76025734dfbf22e761fc9
   map.fitBounds(bounds, {padding: 70});
 })
 .fail(function() {
-  alert("No clubs retrieved. Check either the CDN or the data's geojson format.")
+  console.log("No clubs retrieved. Check either the CDN or the data's geojson format.")
 });
