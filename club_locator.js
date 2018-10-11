@@ -25,10 +25,10 @@ function createPopUp(currentFeature) {
         .setHTML('<h3>' + currentFeature.clubName + '</h3>' +
           '<h4>' + prop.address + '<br />' +
           prop.city + ', ' + prop.state + ' ' + prop.postalCode + '<br />' +
-          '<a href="mailto:' + currentFeature.email + '">Contact</a><br />' +
+          '<a href="mailto:' + currentFeature.email + '"><button class="c-map__button">Contact</button></a>' +
           '<a href="https://www.google.com/maps/dir//' +
           coordinates[1] + ',' + coordinates[0] + '/@' + coordinates[1] + ',' +
-          coordinates[0] + ',7.37z/data=!4m2!4m1!3e3" target=_blank>Get directions</a>' +
+          coordinates[0] + ',7.37z/data=!4m2!4m1!3e3" target=_blank><button class="c-map__button">Get directions</button></a>' +
           '</h4>'
         )
         .addTo(map);
