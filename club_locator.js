@@ -56,7 +56,7 @@ function buildLocationList(data) {
     details.innerHTML = prop.address + '<br />'
     details.innerHTML += prop.city + ', ' + prop.state + ' ' + prop.postalCode + '<br />'
     details.innerHTML +=
-      '<a style="color:#0e5959;" href="https://www.google.com/maps/dir//' +
+      '<a href="https://www.google.com/maps/dir//' +
       coordinates[1] + ',' + coordinates[0] + '/@' + coordinates[1] + ',' +
       coordinates[0] + ',7.37z/data=!4m2!4m1!3e3" target=_blank>Get directions</a>'
     /*
