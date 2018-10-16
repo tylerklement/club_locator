@@ -26,11 +26,8 @@ function createPopUp(currentFeature) {
     '<div class="c-map__popup-buttons-div">' +
     '<a href="mailto:' + currentFeature.email + '">' +
     '<button class="c-map__button">Contact</button></a>' +
-    '<a href="https://www.google.com/maps/dir//' +
-    coordinates[1] + ',' + coordinates[0] + '/@' + coordinates[1] + ',' +
-    coordinates[0] + ',7.37z/data=!4m2!4m1!3e3" target=_blank><button class="c-map__button">Get directions</button></a></div>' +
-    '</h4>'
-
+    '<a href="https://www.google.com/maps/search/' + encodeURI(prop.address + ', ' + prop.city + ', ' + prop.state + ' ' + prop.postalCode) + '" target=_blank><button class="c-map__button">Directions</button></a></div></h4>'
+    
   var popup = new mapboxgl.Popup({closeOnClick: false})
         .setLngLat(coordinates)
         .setHTML(popupHtml)
