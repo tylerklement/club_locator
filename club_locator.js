@@ -27,7 +27,7 @@ function createPopUp(currentFeature) {
     '<a href="mailto:' + currentFeature.email + '">' +
     '<button class="c-map__button">Contact</button></a>' +
     '<a href="https://www.google.com/maps/search/' + encodeURI(prop.address + ', ' + prop.city + ', ' + prop.state + ' ' + prop.postalCode) + '" target=_blank><button class="c-map__button">Directions</button></a></div></h4>'
-    
+
   var popup = new mapboxgl.Popup({closeOnClick: false})
         .setLngLat(coordinates)
         .setHTML(popupHtml)
@@ -56,9 +56,7 @@ function buildLocationList(data) {
     details.innerHTML = prop.address + '<br />'
     details.innerHTML += prop.city + ', ' + prop.state + ' ' + prop.postalCode + '<br />'
     details.innerHTML +=
-      '<a href="https://www.google.com/maps/dir//' +
-      coordinates[1] + ',' + coordinates[0] + '/@' + coordinates[1] + ',' +
-      coordinates[0] + ',7.37z/data=!4m2!4m1!3e3" target=_blank>Get directions</a>'
+      '<a href="https://www.google.com/maps/search/' + encodeURI(prop.address + ', ' + prop.city + ', ' + prop.state + ' ' + prop.postalCode) + '" target=_blank class="c-map__main-link">Get directions</a>'
     /*
     if (prop.phone) {
       details.innerHTML += ' &middot; ' + prop.phoneFormatted;
@@ -86,8 +84,25 @@ function buildLocationList(data) {
       this.parentNode.classList.add('active');
 
       // 4. scroll to listing
-      document.getElementById(this.parentNode.id).scrollIntoView({ block: 'start',  behavior: 'instant' });
+      document.getElementById(this.parentNode.id).scrollIntoView({ block: 'nearest',  behavior: 'instant' });
     });
+  }
+}
+
+function runSearch() {
+  input = document.getElementById('sidebar-search');
+  filter = input.value.toUpperCase();
+  listings = document.getElementById("map-listings");
+  items = listings.getElementsByClassName("item")
+
+  // Loop through all list items, and hide those who don't match the search query
+  for (i = 0; i < items.length; i++) {
+      a = items[i].getElementsByTagName("a")[0];
+      if (a.innerHTML.toUpperCase().indexOf(filter) == -1) {
+          items[i].style.display = "none";
+      } else {
+        items[i].style.display = "";
+      }
   }
 }
 
@@ -158,7 +173,7 @@ jQuery.getJSON("https://gitcdn.link/cdn/tylerklement/fbd62b76025734dfbf22e761fc9
         listing.classList.add('active');
 
         // 4. scroll to listing
-        document.getElementById(listing.id).scrollIntoView({ block: 'start',  behavior: 'instant' });
+        document.getElementById(listing.id).scrollIntoView({ block: 'nearest',  behavior: 'instant' });
     });
 
     longs.push(marker.geometry.coordinates[0])
