@@ -63,8 +63,6 @@ function buildLocationList(data) {
     }
     */
 
-
-
     link.addEventListener('click', function(e){
       // Update the currentFeature to the club associated with the clicked link
       var clickedListing = data.features[this.dataPosition];

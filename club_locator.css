@@ -96,6 +96,10 @@
 .c-map__sidebar-listings .item .title small { font-weight:400; }
 .c-map__sidebar-listings .item.active .title,
 .c-map__sidebar-listings .item .title:hover { color:#951818; }
+.c-map__sidebar-listings .item:hover {
+  background-color:#f8f8f8;
+  cursor: pointer;
+}
 .c-map__sidebar-listings .item.active {
   background-color:#f8f8f8;
 }
