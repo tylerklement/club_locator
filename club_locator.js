@@ -45,6 +45,7 @@ function buildLocationList(data) {
     var listing = listings.appendChild(document.createElement('div'));
     listing.className = 'item';
     listing.id = "map-listing-" + i;
+    listing.dataPosition = i
 
     var link = listing.appendChild(document.createElement('a'));
     link.href = '#';
@@ -63,7 +64,8 @@ function buildLocationList(data) {
     }
     */
 
-    link.addEventListener('click', function(e){
+
+    listing.addEventListener('click', function(e){
       // Update the currentFeature to the club associated with the clicked link
       var clickedListing = data.features[this.dataPosition];
 
@@ -79,10 +81,10 @@ function buildLocationList(data) {
       if (activeItem[0]) {
          activeItem[0].classList.remove('active');
       }
-      this.parentNode.classList.add('active');
+      this.classList.add('active');
 
       // 4. scroll to listing
-      document.getElementById(this.parentNode.id).scrollIntoView({ block: 'nearest',  behavior: 'instant' });
+      document.getElementById(this.id).scrollIntoView({ block: 'nearest',  behavior: 'instant' });
     });
   }
 }
@@ -168,6 +170,7 @@ jQuery.getJSON("https://gitcdn.link/cdn/tylerklement/fbd62b76025734dfbf22e761fc9
         }
 
         var listing = document.getElementById('map-listing-' + i);
+        console.log(listing)
         listing.classList.add('active');
 
         // 4. scroll to listing
