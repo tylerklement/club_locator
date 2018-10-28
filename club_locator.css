@@ -180,7 +180,8 @@ c-map__main-div::-webkit-scrollbar-thumb {
 .mapboxgl-popup-content-wrapper {
   padding:1%;
 }
-.mapboxgl-popup-content h3 {
+.mapboxgl-popup-content .c-map__popup-title {
+  font-size: 1.2em;
   background:#0e5959;
   color:#fff;
   margin:0;
@@ -192,7 +193,7 @@ c-map__main-div::-webkit-scrollbar-thumb {
   text-align: center;
 }
 
-.mapboxgl-popup-content h4 {
+.mapboxgl-popup-content .c-map__popup-content {
   margin:0;
   display:block;
   padding: 10px 10px 10px 10px;

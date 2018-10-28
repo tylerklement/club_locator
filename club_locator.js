@@ -20,13 +20,18 @@ function createPopUp(currentFeature) {
 
   var prop = currentFeature.properties
   var coordinates = currentFeature.geometry.coordinates
-  var popupHtml = '<h3>' + currentFeature.clubName + '</h3>'
-  popupHtml += '<h4>' + prop.address + '<br />' +
-    prop.city + ', ' + prop.state + ' ' + prop.postalCode + '<br />' +
+  var popupHtml = "<div class='c-map__popup-title'>" + currentFeature.clubName + '</div>'
+  popupHtml += "<div class='c-map__popup-content'>"
+  if (prop.address != '') {
+    popupHtml += prop.address + '<br />'
+  }
+  popupHtml += prop.city + ', ' + prop.state + ' ' + prop.postalCode + '<br />' +
     '<div class="c-map__popup-buttons-div">' +
-    '<a href="mailto:' + currentFeature.email + '">' +
-    '<button class="c-map__button">Contact</button></a>' +
-    '<a href="https://www.google.com/maps/search/' + encodeURI(prop.address + ', ' + prop.city + ', ' + prop.state + ' ' + prop.postalCode) + '" target=_blank><button class="c-map__button">Directions</button></a></div></h4>'
+    '1-' + prop.phoneFormatted +
+    '<a href="mailto:' + currentFeature.email + '">' + currentFeature.email + '</a>' +
+    //'<a href="mailto:' + currentFeature.email + '">' +
+    //'<button class="c-map__button">Contact</button></a>' +
+    '<a href="https://www.google.com/maps/search/' + encodeURI(prop.address + ', ' + prop.city + ', ' + prop.state + ' ' + prop.postalCode) + '" target=_blank><button class="c-map__button">Directions</button></a></div></div>'
 
   var popup = new mapboxgl.Popup({closeOnClick: false})
         .setLngLat(coordinates)
@@ -55,7 +60,10 @@ function buildLocationList(data) {
 
     var details = listing.appendChild(document.createElement('div'));
     details.className = 'c-map__sidebar-listings-item-details'
-    details.innerHTML = prop.address + '<br />'
+    details.innerHTML = ''
+    if (prop.address != '') {
+      details.innerHTML += prop.address + '<br />'
+    }
     details.innerHTML += prop.city + ', ' + prop.state + ' ' + prop.postalCode + '<br />'
     details.innerHTML +=
       '<a href="https://www.google.com/maps/search/' + encodeURI(prop.address + ', ' + prop.city + ', ' + prop.state + ' ' + prop.postalCode) + '" target=_blank class="c-map__main-link">Get directions</a>'
@@ -94,7 +102,7 @@ function runSearch() {
   input = document.getElementById('sidebar-search');
   filter = input.value.toUpperCase();
   listings = document.getElementById("map-listings");
-  items = listings.getElementsByClassName("item")
+  items = listings.getElementsByClassName("c-map__sidebar-listings-item")
 
   // Loop through all list items, and hide those who don't match the search query
   for (i = 0; i < items.length; i++) {
