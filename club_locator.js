@@ -43,17 +43,18 @@ function buildLocationList(data) {
 
     var listings = document.getElementById('map-listings');
     var listing = listings.appendChild(document.createElement('div'));
-    listing.className = 'item';
+    listing.className = 'c-map__sidebar-listings-item';
     listing.id = "map-listing-" + i;
     listing.dataPosition = i
 
     var link = listing.appendChild(document.createElement('a'));
     link.href = '#';
-    link.className = 'title';
+    link.className = 'c-map__sidebar-listings-item-title';
     link.dataPosition = i;
     link.innerHTML = currentFeature.clubName;
 
     var details = listing.appendChild(document.createElement('div'));
+    details.className = 'c-map__sidebar-listings-item-details'
     details.innerHTML = prop.address + '<br />'
     details.innerHTML += prop.city + ', ' + prop.state + ' ' + prop.postalCode + '<br />'
     details.innerHTML +=
