@@ -27,8 +27,8 @@ function createPopUp(currentFeature) {
   }
   popupHtml += prop.city + ', ' + prop.state + ' ' + prop.postalCode + '<br />' +
     '<div class="c-map__popup-buttons-div">' +
-    '1-' + prop.phoneFormatted +
-    '<a href="mailto:' + currentFeature.email + '">' + currentFeature.email + '</a>' +
+    '<a href="tel:+1' + prop.phoneFormatted + '"> 📞 1-' + prop.phoneFormatted + '</a>' +
+    '<a href="mailto:' + currentFeature.email + '">✉️ ' + currentFeature.email + '</a>' +
     //'<a href="mailto:' + currentFeature.email + '">' +
     //'<button class="c-map__button">Contact</button></a>' +
     '<a href="https://www.google.com/maps/search/' + encodeURI(prop.address + ', ' + prop.city + ', ' + prop.state + ' ' + prop.postalCode) + '" target=_blank><button class="c-map__button">Directions</button></a></div></div>'
