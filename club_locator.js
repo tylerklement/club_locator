@@ -20,13 +20,18 @@ function createPopUp(currentFeature) {
 
   var prop = currentFeature.properties
   var coordinates = currentFeature.geometry.coordinates
-  var popupHtml = '<h3>' + currentFeature.clubName + '</h3>'
-  popupHtml += '<h4>' + prop.address + '<br />' +
-    prop.city + ', ' + prop.state + ' ' + prop.postalCode + '<br />' +
+  var popupHtml = "<div class='c-map__popup-title'>" + currentFeature.clubName + '</div>'
+  popupHtml += "<div class='c-map__popup-content'>"
+  if (prop.address != '') {
+    popupHtml += prop.address + '<br />'
+  }
+  popupHtml += prop.city + ', ' + prop.state + ' ' + prop.postalCode + '<br />' +
     '<div class="c-map__popup-buttons-div">' +
-    '<a href="mailto:' + currentFeature.email + '">' +
-    '<button class="c-map__button">Contact</button></a>' +
-    '<a href="https://www.google.com/maps/search/' + encodeURI(prop.address + ', ' + prop.city + ', ' + prop.state + ' ' + prop.postalCode) + '" target=_blank><button class="c-map__button">Directions</button></a></div></h4>'
+    '<a href="tel:+1' + prop.phoneFormatted + '"> 📞 1-' + prop.phoneFormatted + '</a>' +
+    '<a href="mailto:' + currentFeature.email + '">✉️ ' + currentFeature.email + '</a>' +
+    //'<a href="mailto:' + currentFeature.email + '">' +
+    //'<button class="c-map__button">Contact</button></a>' +
+    '<a href="https://www.google.com/maps/search/' + encodeURI(prop.address + ', ' + prop.city + ', ' + prop.state + ' ' + prop.postalCode) + '" target=_blank><button class="c-map__button">Directions</button></a></div></div>'
 
   var popup = new mapboxgl.Popup({closeOnClick: false})
         .setLngLat(coordinates)
@@ -43,17 +48,22 @@ function buildLocationList(data) {
 
     var listings = document.getElementById('map-listings');
     var listing = listings.appendChild(document.createElement('div'));
-    listing.className = 'item';
+    listing.className = 'c-map__sidebar-listings-item';
     listing.id = "map-listing-" + i;
+    listing.dataPosition = i
 
     var link = listing.appendChild(document.createElement('a'));
     link.href = '#';
-    link.className = 'title';
+    link.className = 'c-map__sidebar-listings-item-title';
     link.dataPosition = i;
     link.innerHTML = currentFeature.clubName;
 
     var details = listing.appendChild(document.createElement('div'));
-    details.innerHTML = prop.address + '<br />'
+    details.className = 'c-map__sidebar-listings-item-details'
+    details.innerHTML = ''
+    if (prop.address != '') {
+      details.innerHTML += prop.address + '<br />'
+    }
     details.innerHTML += prop.city + ', ' + prop.state + ' ' + prop.postalCode + '<br />'
     details.innerHTML +=
       '<a href="https://www.google.com/maps/search/' + encodeURI(prop.address + ', ' + prop.city + ', ' + prop.state + ' ' + prop.postalCode) + '" target=_blank class="c-map__main-link">Get directions</a>'
@@ -72,8 +82,7 @@ function buildLocationList(data) {
     */
 
 
-
-    link.addEventListener('click', function(e){
+    listing.addEventListener('click', function(e){
       // Update the currentFeature to the club associated with the clicked link
       var clickedListing = data.features[this.dataPosition];
 
@@ -89,10 +98,10 @@ function buildLocationList(data) {
       if (activeItem[0]) {
          activeItem[0].classList.remove('active');
       }
-      this.parentNode.classList.add('active');
+      this.classList.add('active');
 
       // 4. scroll to listing
-      document.getElementById(this.parentNode.id).scrollIntoView({ block: 'nearest',  behavior: 'instant' });
+      document.getElementById(this.id).scrollIntoView({ block: 'nearest',  behavior: 'instant' });
     });
   }
 }
@@ -101,7 +110,7 @@ function runSearch() {
   input = document.getElementById('sidebar-search');
   filter = input.value.toUpperCase();
   listings = document.getElementById("map-listings");
-  items = listings.getElementsByClassName("item")
+  items = listings.getElementsByClassName("c-map__sidebar-listings-item")
 
   // Loop through all list items, and hide those who don't match the search query
   for (i = 0; i < items.length; i++) {
@@ -185,6 +194,7 @@ jQuery.getJSON("https://gitcdn.link/cdn/tylerklement/fbd62b76025734dfbf22e761fc9
         }
 
         var listing = document.getElementById('map-listing-' + i);
+        console.log(listing)
         listing.classList.add('active');
 
         // 4. scroll to listing
