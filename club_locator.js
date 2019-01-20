@@ -33,7 +33,7 @@ function createPopUp(currentFeature) {
     //'<button class="c-map__button">Contact</button></a>' +
     '<a href="https://www.google.com/maps/search/' + encodeURI(prop.address + ', ' + prop.city + ', ' + prop.state + ' ' + prop.postalCode) + '" target=_blank><button class="c-map__button">Directions</button></a></div></div>'
 
-  var popup = new mapboxgl.Popup({closeOnClick: false})
+  var popup = new mapboxgl.Popup({closeOnClick: true, offset: [0, 26]})
         .setLngLat(coordinates)
         .setHTML(popupHtml)
         .addTo(map);
@@ -135,7 +135,7 @@ var map = new mapboxgl.Map({
 // Add zoom and rotation controls to the map.
 map.addControl(new mapboxgl.NavigationControl());
 
-jQuery.getJSON("https://gitcdn.link/cdn/tylerklement/fbd62b76025734dfbf22e761fc961bdc/raw/637ad42c205c7004d44f5069d45165272a7b6694/clubs.geojson")
+jQuery.getJSON("https://cdn.jsdelivr.net/gh/tylerklement/club_locator@master/clubs.geojson")
 .done(function(clubs) {
   // This adds the data to the map
   map.on('load', function (e) {
@@ -159,7 +159,7 @@ jQuery.getJSON("https://gitcdn.link/cdn/tylerklement/fbd62b76025734dfbf22e761fc9
     el.id = "map-marker-" + i;
     el.className = 'c-map__marker';
     // Add markers to the map at all points
-    new mapboxgl.Marker(el, {offset: [0, -23]})
+    new mapboxgl.Marker(el, {offset: [0, 0]})
         .setLngLat(marker.geometry.coordinates)
         .addTo(map);
 
@@ -179,7 +179,6 @@ jQuery.getJSON("https://gitcdn.link/cdn/tylerklement/fbd62b76025734dfbf22e761fc9
         }
 
         var listing = document.getElementById('map-listing-' + i);
-        console.log(listing)
         listing.classList.add('active');
 
         // 4. scroll to listing
@@ -193,6 +192,30 @@ jQuery.getJSON("https://gitcdn.link/cdn/tylerklement/fbd62b76025734dfbf22e761fc9
   var bounds = [[Math.min(...longs), Math.min(...lats)], [Math.max(...longs), Math.max(...lats)]]
   // center map over markers
   map.fitBounds(bounds, {padding: 70});
+
+
+  function setMarkerSize(size) {
+    var markers = document.getElementsByClassName('c-map__marker');
+    for (i = 0; i < markers.length; i++) {
+      markers[i].style.height = size;
+      markers[i].style.width = size;
+    }
+  }
+
+  map.on('zoomend', function (e) {
+    var markerSize = Math.round(map.getZoom())
+    console.log(markerSize);
+    if (markerSize < 3) {
+      setMarkerSize("10px");
+    }
+    else if (markerSize >= 3 && markerSize < 6) {
+      setMarkerSize("20px");
+    } else {
+      setMarkerSize("30px");
+    }
+
+  });
+
 })
 .fail(function() {
   console.log("No clubs retrieved. Check either the CDN or the data's geojson format.")
