@@ -67,6 +67,14 @@ function buildLocationList(data) {
     details.innerHTML += prop.city + ', ' + prop.state + ' ' + prop.postalCode + '<br />'
     details.innerHTML +=
       '<a href="https://www.google.com/maps/search/' + encodeURI(prop.address + ', ' + prop.city + ', ' + prop.state + ' ' + prop.postalCode) + '" target=_blank class="c-map__main-link">Get directions</a>'
+    var hiddenState = listing.appendChild(document.createElement('div'));
+    hiddenState.className = 'state';
+    hiddenState.innerHTML = currentFeature.state.toUpperCase()
+    hiddenState.style.display = 'none';
+    var hiddenCity = listing.appendChild(document.createElement('div'));
+    hiddenCity.className = 'city';
+    hiddenCity.innerHTML = prop.city.toUpperCase()
+    hiddenCity.style.display = 'none';
     /*
     if (prop.phone) {
       details.innerHTML += ' &middot; ' + prop.phoneFormatted;
@@ -107,7 +115,14 @@ function runSearch() {
   // Loop through all list items, and hide those who don't match the search query
   for (i = 0; i < items.length; i++) {
       a = items[i].getElementsByTagName("a")[0];
-      if (a.innerHTML.toUpperCase().indexOf(filter) == -1) {
+      state = items[i].getElementsByClassName("state")[0]
+      city = items[i].getElementsByClassName("city")[0]
+
+      if (
+          a.innerHTML.toUpperCase().indexOf(filter) == -1 &&
+          state.innerHTML.indexOf(filter) == -1 &&
+          city.innerHTML.indexOf(filter) == -1
+      ) {
           items[i].style.display = "none";
       } else {
         items[i].style.display = "";
